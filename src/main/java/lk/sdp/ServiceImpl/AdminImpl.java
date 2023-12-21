@@ -58,17 +58,7 @@ public class AdminImpl implements AdminService {
 
                 User userupdate = userRepo.findById(Long.valueOf(user.get("id").toString())).get();
 
-                String role = user.get("role").toString();
-                userupdate.setRole(role);
-                if (Objects.equals(role, "USER")){
-                    userupdate.setOfficerType(null);
-                }
-                else if (Objects.equals(role, "ADMIN")){
-                    userupdate.setOfficerType("ADMIN");
-                }
-                else {
-                    userupdate.setOfficerType(user.get("officertype").toString());
-                }
+                userupdate.setRole(user.get("role").toString());
 
                 userRepo.save(userupdate);
 

@@ -100,5 +100,21 @@ public class AdminController {
         }
     }
 
+    @DeleteMapping("/deleteuser/{Id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long Id) {
+        try {
+            // Check if the incident exists
+            if (userRepo.existsById(Id)) {
+                userRepo.deleteById(Id);
+                return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("An error occurred while deleting the User", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }
