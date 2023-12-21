@@ -179,6 +179,47 @@ public class IncidentReportImpl implements IncidentReportService {
     }
 
     @Override
+    public JSONObject getIncidentsInProgress(Integer page, Integer perPage,HttpServletRequest request) {
+        try {
+            JSONObject resData = new JSONObject();
+            List<JSONObject> data = new ArrayList<JSONObject>();
+            Page<IncidentReport> dataList = null;
+
+            String officerType = request.getHeader("role");
+            System.out.println(officerType);
+
+
+            if ("ADMIN".equals(officerType)) {
+                dataList = incidentReportRepo.findInquiriesInProgress(PageRequest.of(page - 1, perPage));
+            } else {
+                System.out.println("You do not have access");
+            }
+
+            for (IncidentReport incident : dataList) {
+                JSONObject res = new JSONObject();
+                res.put("incidentId", incident.getIncidentId());
+                res.put("location", incident.getLocation());
+                res.put("status", incident.getStatus());
+                res.put("timeframe", incident.getTimeframe());
+                res.put("comment", incident.getComment());
+                res.put("createdAt", incident.getCreatedDateTime().toLocalDate());
+                res.put("incident", incident.getIncident());
+
+                data.add(res);
+            }
+
+            resData.put("data", data);
+            resData.put("total", dataList.getTotalElements());
+
+            return resData;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    @Override
     public JSONObject getIncidentDetails(Long incidentId) {
         try {
             Optional<IncidentReport> optionalIncident = incidentReportRepo.findById(incidentId);

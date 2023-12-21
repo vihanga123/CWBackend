@@ -30,6 +30,9 @@ public interface IncidentReportRepo extends JpaRepository<IncidentReport,Long> {
       @Query("SELECT e FROM IncidentReport e WHERE e.incidentType.id = 2")
       Page<IncidentReport> findForestryIncidents(PageRequest pageRequest);
 
+      @Query("SELECT e FROM IncidentReport e WHERE e.status IN ('IN PROGRESS', 'COMPLETE', 'COMPLETED')")
+      Page<IncidentReport>findInquiriesInProgress(PageRequest pageRequest);
+
       @Query("SELECT image1 FROM IncidentReport WHERE incidentId = :incidentId")
       List<byte[]> findImage1ByIncidentId(Long incidentId);
 

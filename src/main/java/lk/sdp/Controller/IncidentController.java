@@ -125,6 +125,18 @@ public class IncidentController {
         return new ResponseEntity<JSONObject>(data, HttpStatus.OK);
     }
 
+    @GetMapping("/allinprogress")
+    public ResponseEntity<JSONObject> getIncidentsInProgress(HttpServletRequest request, @RequestParam Integer page, @RequestParam Integer perPage) {
+        JSONObject data = null;
+        try {
+            data = incidentReportService.getIncidentsInProgress(page, perPage,request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<JSONObject>(data, HttpStatus.OK);
+    }
+
+
     @GetMapping("/{incidentId}")
     public ResponseEntity<JSONObject> getIncidentDetails(@PathVariable Long incidentId) {
         JSONObject incidentDetails = incidentReportService.getIncidentDetails(incidentId);

@@ -14,6 +14,8 @@ public interface IncidentReportService {
 
     JSONObject getIncidentReply(HttpServletRequest request);
 
+    JSONObject getIncidentsInProgress(Integer page, Integer perPage,HttpServletRequest request);
+
     JSONObject getIncidentDetails(Long incidentId);
 
 }
