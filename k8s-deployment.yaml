@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: spring-boot-app
-          image: gcr.io/${GCP_PROJECT_ID}/spring-boot-app:latest
+          image: asia-docker.pkg.dev/${GCP_PROJECT_ID}/docker-repo/spring-boot-app:latest
           ports:
             - containerPort: 8444
               protocol: TCP
