@@ -51,6 +51,9 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Install GKE auth plugin (required for kubectl)
+        run: gcloud components install gke-gcloud-auth-plugin --quiet
+
       - name: Configure Docker
         run: gcloud auth configure-docker asia-docker.pkg.dev
 
