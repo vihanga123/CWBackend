@@ -17,7 +17,7 @@ FROM eclipse-temurin:8-jre-alpine
 WORKDIR /app
 
 # Create non-root user for security
-RUN groupadd -r spring && useradd -r -g spring spring
+RUN addgroup -S spring && adduser -S spring -G spring
 
 # Copy JAR from build stage
 COPY --from=build /app/target/*.jar app.jar
@@ -29,7 +29,7 @@ RUN chown spring:spring app.jar
 USER spring
 
 # Expose port (adjust if your app uses different port)
-EXPOSE 8444
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
