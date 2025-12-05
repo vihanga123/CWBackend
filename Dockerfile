@@ -1,39 +1,34 @@
-# Multi-stage build for Spring Boot application
-
-# Stage 1: Build
-FROM maven:3.8.6-openjdk-8-slim AS build
+# ---------- Build Stage ----------
+FROM maven:3.8.6-eclipse-temurin-8-alpine AS build
 WORKDIR /app
 
-# Copy pom.xml and download dependencies (cached layer)
+# Cache dependencies
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
-# Copy source code and build
+# Build application
 COPY src ./src
 RUN mvn clean package -DskipTests -B
 
-# Stage 2: Runtime
+# ---------- Runtime Stage ----------
 FROM eclipse-temurin:8-jre-alpine
-WORKDIR /app
 
-# Create non-root user for security
+# Create non-root user
 RUN addgroup -S spring && adduser -S spring -G spring
 
-# Copy JAR from build stage
+WORKDIR /app
+
+# Copy the fat JAR
 COPY --from=build /app/target/*.jar app.jar
 
-# Change ownership to non-root user
+# Fix ownership
 RUN chown spring:spring app.jar
-
-# Switch to non-root user
 USER spring
 
-# Expose port (adjust if your app uses different port)
 EXPOSE 8444
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+# Proper health check for Spring Boot Actuator
+HEALTHCHECK --interval=30s --timeout=3s --start-period=45s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
