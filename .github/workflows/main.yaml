@@ -9,7 +9,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   IMAGE: spring-boot-test-app
-  GKE_CLUSTER: spring-boot-test-app
+  GKE_CLUSTER: test-dev
   GKE_ZONE: asia-southeast1-a
   DEPLOYMENT_NAME: spring-boot-test-app
 
