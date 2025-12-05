@@ -179,11 +179,11 @@
 			<artifactId>flying-saucer-pdf</artifactId>
 			<version>9.1.22</version>
 		</dependency>
-        <dependency>
-            <groupId>lk.sdp</groupId>
-            <artifactId>sdp</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>lk.sdp</groupId>-->
+<!--            <artifactId>sdp</artifactId>-->
+<!--            <version>0.0.1-SNAPSHOT</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
