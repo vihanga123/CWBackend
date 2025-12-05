@@ -1,4 +1,4 @@
-name: Spring Boot CI/CD to GKE - V3
+name: Spring Boot CI/CD to GKE - V4
 
 on:
   push:
