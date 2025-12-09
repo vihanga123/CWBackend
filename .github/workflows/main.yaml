@@ -3,8 +3,7 @@ name: Spring Boot - Build & Deploy to GKE v10
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -42,7 +41,7 @@ jobs:
       - name: Build JAR
         run: mvn clean package -DskipTests
 
-      # ←←← THIS IS THE ONLY AUTH YOU NEED NOW ←←←
+      # ←←← authenrication gcp ..... ←←←
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -59,7 +58,7 @@ jobs:
 
       - name: Build & Push Image
         run: |
-          IMAGE=asia-docker.pkg.dev/$PROJECT_ID/docker-repo/$IMAGE
+          IMAGE= asia-docker.pkg.dev/$PROJECT_ID/docker-repo/$IMAGE
           docker build -t $IMAGE:$GITHUB_SHA -t $IMAGE:latest .
           docker push $IMAGE:$GITHUB_SHA
           docker push $IMAGE:latest
