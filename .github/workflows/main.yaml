@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: '8'
-          distribution: 'temurin'
+          distribution: 'corretto'
           cache: maven
       - run: mvn test
 
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: '8'
-          distribution: 'temurin'
+          distribution: 'corretto'
           cache: maven
 
       - name: Build JAR
