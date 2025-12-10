@@ -64,4 +64,3 @@ spec:
       targetPort: 8444
       protocol: TCP
       name: http
-      
