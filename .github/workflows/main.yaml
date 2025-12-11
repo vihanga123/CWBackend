@@ -6,7 +6,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write  # Required for OIDC
+  id-token: write  # Required for OIDC #########
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
