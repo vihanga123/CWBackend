@@ -5,8 +5,10 @@ on:
     branches: [ main ]
 
 permissions:
-  contents: read
   id-token: write  # Required for OIDC #########
+
+options:
+logging: 'CLOUD_LOGGING_ONLY'
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
