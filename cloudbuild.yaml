@@ -1,0 +1,66 @@
+steps:
+  # Test
+  - name: 'maven:3.6.3-jdk-8'
+    entrypoint: 'mvn'
+    args: ['test']
+
+  # Build JAR
+  - name: 'maven:3.6.3-jdk-8'
+    entrypoint: 'mvn'
+    args: ['clean', 'package', '-DskipTests']
+
+  # Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-docker.pkg.dev/$PROJECT_ID/docker-repo/spring-boot-app:$SHORT_SHA'
+      - '-t'
+      - 'asia-docker.pkg.dev/$PROJECT_ID/docker-repo/spring-boot-app:latest'
+      - '.'
+
+  # Push Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'asia-docker.pkg.dev/$PROJECT_ID/docker-repo/spring-boot-app'
+
+  # Deploy to GKE
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'set'
+      - 'image'
+      - 'deployment/spring-boot-app'
+      - 'spring-boot-app=asia-docker.pkg.dev/$PROJECT_ID/docker-repo/spring-boot-app:$SHORT_SHA'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=test-dev'
+
+  # Check rollout status
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'rollout'
+      - 'status'
+      - 'deployment/spring-boot-app'
+      - '--timeout=5m'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=test-dev'
+
+  # Get pods and services
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'get'
+      - 'pods,svc'
+      - '-l'
+      - 'app=spring-boot-app'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=test-dev'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  # machineType: 'N1_HIGHCPU_8'  #  test
+
+timeout: '1200s'  # 20 minutes
