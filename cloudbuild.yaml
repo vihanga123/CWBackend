@@ -1,16 +1,19 @@
 steps:
   # Test
   - name: 'maven:3.6.3-jdk-8'
+    id: 'test'
     entrypoint: 'mvn'
     args: ['test']
 
   # Build JAR
   - name: 'maven:3.6.3-jdk-8'
+    id: 'build-jar'
     entrypoint: 'mvn'
     args: ['clean', 'package', '-DskipTests']
 
   # Build Docker image
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-image'
     args:
       - 'build'
       - '-t'
@@ -21,6 +24,7 @@ steps:
 
   # Push Docker image
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-image'
     args:
       - 'push'
       - '--all-tags'
@@ -28,39 +32,68 @@ steps:
 
   # Deploy to GKE
   - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'deploy'
     args:
       - 'set'
       - 'image'
       - 'deployment/spring-boot-app'
       - 'spring-boot-app=asia-docker.pkg.dev/$PROJECT_ID/docker-repo/spring-boot-app:$SHORT_SHA'
+      - '-n'
+      - 'default'  # Specify namespace explicitly
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=test-dev'
 
-  # Check rollout status
+  # Verify deployment
   - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'verify-deployment'
     args:
       - 'rollout'
       - 'status'
       - 'deployment/spring-boot-app'
       - '--timeout=5m'
+      - '-n'
+      - 'default'
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=test-dev'
 
-  # Get pods and services
+  # Get deployment info
   - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'get-info'
     args:
       - 'get'
-      - 'pods,svc'
+      - 'pods,svc,deployment'
       - '-l'
       - 'app=spring-boot-app'
+      - '-n'
+      - 'default'
+      - '-o'
+      - 'wide'  # More detailed output
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=test-dev'
+
+  # Optional: Describe pods for troubleshooting
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'describe-pods'
+    args:
+      - 'describe'
+      - 'pods'
+      - '-l'
+      - 'app=spring-boot-app'
+      - '-n'
+      - 'default'
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=test-dev'
 
 options:
-  logging: CLOUD_LOGGING_ONLY
-  # machineType: 'N1_HIGHCPU_8'  #  test
+  logging: LEGACY  # Changed: Shows logs in both Cloud Logging and Build UI
+  logStreamingOption: STREAM_ON
+  machineType: 'E2_HIGHCPU_8'  # Updated machine type (N1 is older generation)
 
-timeout: '1200s'  # 20 minutes
+timeout: '1200s'
+
+# Optional: Save logs to GCS for longer retention
+logsBucket: 'gs://YOUR_BUCKET_NAME/logs'
