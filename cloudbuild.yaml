@@ -96,4 +96,4 @@ options:
 timeout: '1200s'
 
 # Optional: Save logs to GCS for longer retention
-logsBucket: 'gs://YOUR_BUCKET_NAME/logs'
+logsBucket: 'gs://tf-state-bucket-vih/logs'
