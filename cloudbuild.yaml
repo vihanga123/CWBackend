@@ -30,6 +30,16 @@ steps:
       - '--all-tags'
       - 'asia-docker.pkg.dev/$PROJECT_ID/docker-repo/spring-boot-app'
 
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'apply-manifests'
+    args:
+      - 'apply'
+      - '-f'
+      - 'k8s/deployment.yaml'  
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=test-dev'
+
   # Deploy to GKE
   - name: 'gcr.io/cloud-builders/kubectl'
     id: 'deploy'
@@ -39,7 +49,7 @@ steps:
       - 'deployment/spring-boot-app'
       - 'spring-boot-app=asia-docker.pkg.dev/$PROJECT_ID/docker-repo/spring-boot-app:$SHORT_SHA'
       - '-n'
-      - 'default'  # Specify namespace explicitly
+      - 'default' 
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=asia-southeast1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=test-dev'
